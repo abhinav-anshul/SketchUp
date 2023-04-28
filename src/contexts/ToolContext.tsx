@@ -6,6 +6,7 @@ interface ToolContextState {
   penSize: string
   isPen: boolean
   isErase: boolean
+  clearAll: boolean
 }
 
 type ToolContextAction =
@@ -13,12 +14,14 @@ type ToolContextAction =
   | { type: "SET_PEN_SIZE"; payload: string }
   | { type: "SET_IS_PEN"; payload: boolean }
   | { type: "SET_IS_ERASE"; payload: boolean }
+  | { type: "SET_CLEAR_ALL"; payload: boolean }
 
 const initialToolContextState: ToolContextState = {
   penColor: "",
   penSize: "",
   isPen: true,
   isErase: false,
+  clearAll: false,
 }
 
 function toolContextReducer(state: ToolContextState, action: ToolContextAction): ToolContextState {
@@ -31,6 +34,8 @@ function toolContextReducer(state: ToolContextState, action: ToolContextAction):
       return { ...state, isPen: action.payload }
     case "SET_IS_ERASE":
       return { ...state, isErase: action.payload }
+    case "SET_CLEAR_ALL":
+      return { ...state, clearAll: action.payload }
     default:
       return state
   }

@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import { useToolContext } from "@/contexts/ToolContext"
 import React, { useRef, useEffect, useLayoutEffect, useState } from "react"
@@ -74,8 +74,8 @@ function Canvas(props: Props) {
     const ctx = canvas?.getContext("2d")
     if (stateTool?.isPen) {
       if (ctx) {
-        ctx.strokeStyle = "#FFC178"
-        ctx.lineWidth = 10
+        ctx.strokeStyle = stateTool?.penColor
+        ctx.lineWidth = Number(stateTool?.penSize)
         ctx.lineJoin = "round"
         ctx.lineCap = "round"
       }
@@ -85,6 +85,7 @@ function Canvas(props: Props) {
         const ctx = canvas?.getContext("2d")
         ctx?.beginPath()
         ctx?.moveTo(e.offsetX, e.offsetY)
+        dispatchTool({ type: "SET_CLEAR_ALL", payload: false })
       }
       const draw = (e: any) => {
         if (isDrawing) {
@@ -92,10 +93,12 @@ function Canvas(props: Props) {
           const ctx = canvas?.getContext("2d")
           ctx?.lineTo(e?.offsetX, e.offsetY)
           ctx?.stroke()
+          dispatchTool({ type: "SET_CLEAR_ALL", payload: false })
         }
       }
       const stopDrawing = () => {
         setIsDrawing(false)
+        dispatchTool({ type: "SET_CLEAR_ALL", payload: false })
       }
       // add event handlers here
       canvas?.addEventListener("mousemove", draw)
@@ -111,7 +114,16 @@ function Canvas(props: Props) {
         canvas?.removeEventListener("mouseout", stopDrawing)
       }
     }
-  }, [isDrawing, stateTool?.isPen, stateTool?.isErase])
+  }, [isDrawing, stateTool?.isPen, stateTool?.isErase, stateTool?.penColor, dispatchTool])
+
+  // clearAll
+  useEffect(() => {
+    const canvas = canvasRef?.current
+    const ctx = canvas?.getContext("2d")
+    if (ctx && canvas && stateTool?.clearAll === true) {
+      ctx.clearRect(0, 0, canvas?.width, canvas?.height)
+    }
+  }, [stateTool?.clearAll])
 
   return (
     <main>
