@@ -1,6 +1,7 @@
 "use client"
 
 import { useToolContext } from "@/contexts/ToolContext"
+import { drawDots } from "@/lib/paperType"
 import React, { useRef, useEffect, useLayoutEffect, useState } from "react"
 
 interface Props {}
@@ -11,16 +12,40 @@ function Canvas(props: Props) {
   const [isDrawing, setIsDrawing] = useState<boolean>(false)
   const [isErasing, setIsErasing] = useState<boolean>(false)
   const { stateTool, dispatchTool } = useToolContext()
+  const canvas = canvasRef.current
+  const ctx = canvas?.getContext("2d")
 
   useLayoutEffect(() => {
     const canvas = canvasRef.current
     const ctx = canvas?.getContext("2d")
-
     if (ctx) {
-      ctx.canvas.width = window.innerWidth
-      ctx.canvas.height = window.innerHeight
+      ctx.canvas.width = window.innerWidth * 6
+      ctx.canvas.height = window.innerHeight * 6
+      ctx.scale(6, 6)
     }
   }, [])
+
+  useEffect(() => {
+    const canvas = canvasRef?.current
+    const ctx = canvas?.getContext("2d")
+    if (stateTool?.paperType === "grid") {
+      drawDots(ctx)
+    }
+    if (stateTool?.paperType === "blank") {
+      if (canvas) {
+        ctx?.clearRect(0, 0, canvas?.width, canvas?.height)
+      }
+    }
+  }, [ctx, stateTool?.paperType, canvas?.height, canvas?.width, canvas])
+
+  //download the canvas as an image
+  // useEffect(() => {
+  //   console.log("hello")
+  //   const canvas = canvasRef.current
+  //   if (canvas) {
+  //     dispatchTool({ type: "SET_CANVAS_REF", payload: canvas })
+  //   }
+  // }, [stateTool?.canvasRef, dispatchTool, canvasRef])
 
   // isErase useEffect()
   useEffect(() => {
@@ -40,6 +65,9 @@ function Canvas(props: Props) {
         const ctx = canvas?.getContext("2d")
         ctx?.beginPath()
         ctx?.moveTo(e.offsetX, e.offsetY)
+        if (stateTool?.paperType === "grid") {
+          drawDots(ctx)
+        }
       }
       const erase = (e: any) => {
         if (isErasing) {
@@ -47,10 +75,16 @@ function Canvas(props: Props) {
           const ctx = canvas?.getContext("2d")
           ctx?.lineTo(e?.offsetX, e.offsetY)
           ctx?.stroke()
+          if (stateTool?.paperType === "grid") {
+            drawDots(ctx)
+          }
         }
       }
       const stopErasing = () => {
         setIsErasing(false)
+        if (stateTool?.paperType === "grid") {
+          drawDots(ctx)
+        }
       }
       // add event handlers here
       canvas?.addEventListener("mousemove", erase)
@@ -78,6 +112,13 @@ function Canvas(props: Props) {
         ctx.lineWidth = Number(stateTool?.penSize)
         ctx.lineJoin = "round"
         ctx.lineCap = "round"
+        if (stateTool?.penStyle === "dashed") {
+          ctx.setLineDash([5, 10])
+        } else if (stateTool?.penStyle === "dotted") {
+          ctx.setLineDash([1, 8])
+        } else {
+          ctx.setLineDash([0, 0])
+        }
       }
       const startDrawing = (e: any) => {
         setIsDrawing(true)
@@ -114,7 +155,15 @@ function Canvas(props: Props) {
         canvas?.removeEventListener("mouseout", stopDrawing)
       }
     }
-  }, [isDrawing, stateTool?.isPen, stateTool?.isErase, stateTool?.penColor, dispatchTool])
+  }, [
+    isDrawing,
+    stateTool?.isPen,
+    stateTool?.isErase,
+    stateTool?.penColor,
+    dispatchTool,
+    stateTool?.penSize,
+    stateTool?.penStyle,
+  ])
 
   // clearAll
   useEffect(() => {
@@ -123,7 +172,11 @@ function Canvas(props: Props) {
     if (ctx && canvas && stateTool?.clearAll === true) {
       ctx.clearRect(0, 0, canvas?.width, canvas?.height)
     }
-  }, [stateTool?.clearAll])
+    // prevents clearing of dots as a bg if selected on paperType
+    if (stateTool?.paperType === "grid") {
+      drawDots(ctx)
+    }
+  }, [stateTool?.clearAll, stateTool?.paperType])
 
   return (
     <main>

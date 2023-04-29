@@ -7,6 +7,9 @@ interface ToolContextState {
   isPen: boolean
   isErase: boolean
   clearAll: boolean
+  canvasRef: any
+  penStyle: string
+  paperType: string
 }
 
 type ToolContextAction =
@@ -15,13 +18,19 @@ type ToolContextAction =
   | { type: "SET_IS_PEN"; payload: boolean }
   | { type: "SET_IS_ERASE"; payload: boolean }
   | { type: "SET_CLEAR_ALL"; payload: boolean }
+  | { type: "SET_CANVAS_REF"; payload: any }
+  | { type: "SET_PEN_STYLE"; payload: string }
+  | { type: "SET_PAPER_TYPE"; payload: string }
 
 const initialToolContextState: ToolContextState = {
-  penColor: "",
-  penSize: "",
+  penColor: "#111",
+  penSize: "4",
   isPen: true,
   isErase: false,
   clearAll: false,
+  canvasRef: null,
+  penStyle: "solid",
+  paperType: "blank",
 }
 
 function toolContextReducer(state: ToolContextState, action: ToolContextAction): ToolContextState {
@@ -36,6 +45,12 @@ function toolContextReducer(state: ToolContextState, action: ToolContextAction):
       return { ...state, isErase: action.payload }
     case "SET_CLEAR_ALL":
       return { ...state, clearAll: action.payload }
+    case "SET_CANVAS_REF":
+      return { ...state, clearAll: action.payload }
+    case "SET_PEN_STYLE":
+      return { ...state, penStyle: action.payload }
+    case "SET_PAPER_TYPE":
+      return { ...state, paperType: action.payload }
     default:
       return state
   }
