@@ -38,14 +38,15 @@ function Canvas(props: Props) {
     }
   }, [ctx, stateTool?.paperType, canvas?.height, canvas?.width, canvas])
 
-  //download the canvas as an image
-  // useEffect(() => {
-  //   console.log("hello")
-  //   const canvas = canvasRef.current
-  //   if (canvas) {
-  //     dispatchTool({ type: "SET_CANVAS_REF", payload: canvas })
-  //   }
-  // }, [stateTool?.canvasRef, dispatchTool, canvasRef])
+  // download the canvas as an image
+  useEffect(() => {
+    const canvas = canvasRef.current
+    console.log({canvas})
+    if (canvas) {
+      dispatchTool({ type: "SET_CANVAS_REF", payload: canvas })
+    }
+    console.log("---changing---")
+  }, [stateTool?.canvasRef, dispatchTool, canvasRef, canvas])
 
   // isErase useEffect()
   useEffect(() => {
@@ -100,7 +101,7 @@ function Canvas(props: Props) {
         canvas?.removeEventListener("mouseout", stopErasing)
       }
     }
-  }, [isErasing, stateTool?.isErase, stateTool?.isPen])
+  }, [isErasing, stateTool?.isErase, stateTool?.isPen, stateTool?.paperType])
 
   // ispen useEffect()
   useEffect(() => {

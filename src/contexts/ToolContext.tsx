@@ -10,6 +10,7 @@ interface ToolContextState {
   canvasRef: any
   penStyle: string
   paperType: string
+  supabaseImgUrl: string
 }
 
 type ToolContextAction =
@@ -21,6 +22,7 @@ type ToolContextAction =
   | { type: "SET_CANVAS_REF"; payload: any }
   | { type: "SET_PEN_STYLE"; payload: string }
   | { type: "SET_PAPER_TYPE"; payload: string }
+  | { type: "SET_SUPABASE_URL"; payload: string }
 
 const initialToolContextState: ToolContextState = {
   penColor: "#111",
@@ -31,6 +33,7 @@ const initialToolContextState: ToolContextState = {
   canvasRef: null,
   penStyle: "solid",
   paperType: "blank",
+  supabaseImgUrl: ""
 }
 
 function toolContextReducer(state: ToolContextState, action: ToolContextAction): ToolContextState {
@@ -46,11 +49,13 @@ function toolContextReducer(state: ToolContextState, action: ToolContextAction):
     case "SET_CLEAR_ALL":
       return { ...state, clearAll: action.payload }
     case "SET_CANVAS_REF":
-      return { ...state, clearAll: action.payload }
+      return { ...state, canvasRef: action.payload }
     case "SET_PEN_STYLE":
       return { ...state, penStyle: action.payload }
     case "SET_PAPER_TYPE":
       return { ...state, paperType: action.payload }
+      case "SET_SUPABASE_URL":
+      return { ...state, supabaseImgUrl: action.payload }
     default:
       return state
   }

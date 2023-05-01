@@ -2,6 +2,17 @@
 const nextConfig = {
   experimental: {
     appDir: true,
+    fsRoutes: true,
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "gjciftliksnfvfdzdxuo.supabase.co",
+        port: "",
+        // pathname: '/account123/**',
+      },
+    ],
   },
 }
 
