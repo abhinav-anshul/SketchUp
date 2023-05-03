@@ -1,14 +1,13 @@
 "use client"
 import { useToolContext } from "@/contexts/ToolContext"
-import React, { Fragment, createElement, useState } from "react"
+import React, { Fragment, useState } from "react"
 import { Toggle } from "@/components/ui/toggle"
-import { Edit2, Eraser, X, Download, Grid, Square } from "lucide-react"
+import { Edit2, Eraser, X, Download, Square } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { colorPalette } from "@/lib/colors"
 import { penSizeThickness, penStyleType, paperType } from "@/constants/index.tsx"
 import { createClient } from "@supabase/supabase-js"
-import { nanoid } from 'nanoid'
-
+import { nanoid } from "nanoid"
 
 function Toolbar() {
   const { stateTool, dispatchTool } = useToolContext()
@@ -33,26 +32,21 @@ function Toolbar() {
 
   const handleClearAll = () => {
     //clear canvas
-    console.log("--toolbar")
     dispatchTool({ type: "SET_CLEAR_ALL", payload: true })
   }
 
   const handlePenPressedChange = (i: any) => {
-    console.log({ i })
     setStateErase(false)
   }
 
   const handleErasePressedChange = (i: any) => {
-    console.log({ i })
     setStatePen(false)
   }
 
   const handleClearAllPressedChange = (i: any) => {
-    console.log({ i })
   }
 
   const handleDownloadPressedChange = (i: any) => {
-    console.log({ i })
   }
 
   const handleColorsClick = (i: any) => {
@@ -60,7 +54,6 @@ function Toolbar() {
   }
 
   const handlePenSizeClick = (i: any) => {
-    console.log({ i })
     dispatchTool({ type: "SET_PEN_SIZE", payload: i?.thickness })
   }
 
@@ -69,7 +62,6 @@ function Toolbar() {
   }
 
   const handlePaperTypeClick = (i: any) => {
-    console.log({ i })
     dispatchTool({ type: "SET_PAPER_TYPE", payload: i?.paperType })
   }
 
@@ -100,11 +92,8 @@ function Toolbar() {
         document.body.removeChild(link)
       }
       img.src = url
-      console.log({ img })
     }
   }
-
-
 
   return (
     <>
@@ -120,7 +109,6 @@ function Toolbar() {
         }}
         className="px-4 rounded-md h-[60px] flex justify-around items-center min-w-[500px] bg-white"
       >
-        {/* @ts-ignore */}
         {/* // pen tool */}
         <Toggle
           pressed={statePen}

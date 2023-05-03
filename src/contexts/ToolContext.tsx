@@ -33,7 +33,7 @@ const initialToolContextState: ToolContextState = {
   canvasRef: null,
   penStyle: "solid",
   paperType: "blank",
-  supabaseImgUrl: ""
+  supabaseImgUrl: "",
 }
 
 function toolContextReducer(state: ToolContextState, action: ToolContextAction): ToolContextState {
@@ -54,8 +54,9 @@ function toolContextReducer(state: ToolContextState, action: ToolContextAction):
       return { ...state, penStyle: action.payload }
     case "SET_PAPER_TYPE":
       return { ...state, paperType: action.payload }
-      case "SET_SUPABASE_URL":
+    case "SET_SUPABASE_URL":
       return { ...state, supabaseImgUrl: action.payload }
+
     default:
       return state
   }

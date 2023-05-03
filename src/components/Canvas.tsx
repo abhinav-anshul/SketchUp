@@ -4,17 +4,24 @@ import { useToolContext } from "@/contexts/ToolContext"
 import { drawDots } from "@/lib/paperType"
 import React, { useRef, useEffect, useLayoutEffect, useState } from "react"
 
-interface Props {}
-
-function Canvas(props: Props) {
-  const {} = props
+function Canvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isDrawing, setIsDrawing] = useState<boolean>(false)
   const [isErasing, setIsErasing] = useState<boolean>(false)
+
+  // for localstorage saving
+  const [canvasState, setCanvasState] = useState<any>({
+    strokes: [],
+    currentStroke: [],
+    strokeColor: "#000000",
+    strokeWidth: 5,
+  })
+
   const { stateTool, dispatchTool } = useToolContext()
   const canvas = canvasRef.current
   const ctx = canvas?.getContext("2d")
-
+  
+  // for higher canvas resolution
   useLayoutEffect(() => {
     const canvas = canvasRef.current
     const ctx = canvas?.getContext("2d")
@@ -25,6 +32,24 @@ function Canvas(props: Props) {
     }
   }, [])
 
+  // useEffect(() => {
+  //   const savedState = localStorage.getItem("canvasState")
+  //   if (savedState) {
+  //     setCanvasState(JSON.parse(savedState))
+  //   }
+  //   const canvas = canvasRef.current
+  //   const ctx = canvas?.getContext("2d")
+  //   canvasState.strokes.forEach((stroke: any) => {
+  //     ctx?.beginPath()
+  //     ctx?.moveTo(stroke[0]?.x, stroke[0]?.y)
+  //     stroke.forEach((i: any) => {
+  //       ctx?.lineTo(i?.x, i?.y)
+  //       ctx?.stroke()
+  //     })
+  //   })
+  // }, [ctx, canvas, canvasState.strokes])
+
+  // for paper type - grid or blank
   useEffect(() => {
     const canvas = canvasRef?.current
     const ctx = canvas?.getContext("2d")
@@ -41,11 +66,9 @@ function Canvas(props: Props) {
   // download the canvas as an image
   useEffect(() => {
     const canvas = canvasRef.current
-    console.log({canvas})
     if (canvas) {
       dispatchTool({ type: "SET_CANVAS_REF", payload: canvas })
     }
-    console.log("---changing---")
   }, [stateTool?.canvasRef, dispatchTool, canvasRef, canvas])
 
   // isErase useEffect()
@@ -127,7 +150,15 @@ function Canvas(props: Props) {
         const ctx = canvas?.getContext("2d")
         ctx?.beginPath()
         ctx?.moveTo(e.offsetX, e.offsetY)
+        // ctx?.arc(e.offsetX, e.offsetX, 10, 0, Math.PI*2);
         dispatchTool({ type: "SET_CLEAR_ALL", payload: false })
+        // if (canvas) {
+        //   const updatedState = {
+        //     ...canvasState,
+        //     currentStroke: [{ x: e.offsetX, y: e.offsetY }],
+        //   }
+        //   setCanvasState(updatedState)
+        // }
       }
       const draw = (e: any) => {
         if (isDrawing) {
@@ -136,11 +167,24 @@ function Canvas(props: Props) {
           ctx?.lineTo(e?.offsetX, e.offsetY)
           ctx?.stroke()
           dispatchTool({ type: "SET_CLEAR_ALL", payload: false })
+          // const updatedState = {
+          //   ...canvasState,
+          //   currentStroke: [...canvasState.currentStroke, { x: e.offsetX, y: e.offsetY }],
+          // }
+          // setCanvasState(updatedState)
         }
       }
       const stopDrawing = () => {
         setIsDrawing(false)
         dispatchTool({ type: "SET_CLEAR_ALL", payload: false })
+        const updatedState = {
+          ...canvasState,
+          strokes: [...canvasState.strokes, canvasState.currentStroke],
+          currentStroke: [],
+        }
+        // setCanvasState(updatedState)
+        // const data = JSON.stringify(canvasState)
+        // localStorage.setItem("canvasState", data)
       }
       // add event handlers here
       canvas?.addEventListener("mousemove", draw)
@@ -164,6 +208,7 @@ function Canvas(props: Props) {
     dispatchTool,
     stateTool?.penSize,
     stateTool?.penStyle,
+    canvasState,
   ])
 
   // clearAll
@@ -180,9 +225,9 @@ function Canvas(props: Props) {
   }, [stateTool?.clearAll, stateTool?.paperType])
 
   return (
-    <main>
+    <>
       <canvas ref={canvasRef}>Browser is not supported!</canvas>
-    </main>
+    </>
   )
 }
 

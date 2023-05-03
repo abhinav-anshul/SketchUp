@@ -47,8 +47,6 @@ function Share(props: Props) {
             if (error) {
               console.log("Error uploading image:", error)
             } else {
-              console.log("Image uploaded successfully:", data)
-              console.log("success-data--", data?.path?.split(".")[0])
               dispatchTool({ type: "SET_SUPABASE_URL", payload: data?.path })
               if (process.env.NODE_ENV === "development") {
                 setShareLink(() => `http://localhost:3000/share/${data?.path?.split(".")[0]}`)

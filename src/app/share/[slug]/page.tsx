@@ -1,5 +1,6 @@
 import React, { Suspense } from "react"
 import Image from "next/image"
+import Loading from "./loading"
 
 interface Props {
   params: any
@@ -13,10 +14,11 @@ function Home(props: Props) {
   return (
     <>
       <main>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<Loading />}>
           <Image
-            fill
             alt=""
+            fill={true}
+            style={{ width: "100%", height: "100%" }}
             src={`${supabaseProjectUrl}/storage/v1/object/public/${supabaseStorageBucket}/${params?.slug}.png`}
           />
         </Suspense>
