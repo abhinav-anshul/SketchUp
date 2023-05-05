@@ -128,3 +128,22 @@ h6 {
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
+
+/* // custom loader styles */
+.loader {
+  width: 35px;
+  height: 35px;
+  margin: 0 auto;
+  border-top: 2px solid #292929;
+  border-right: 2px solid #efefef;
+  border-bottom: 2px solid #efefef;
+  border-left: 2px solid #efefef;
+  border-radius: 100px;
+  animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}

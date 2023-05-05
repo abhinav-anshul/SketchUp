@@ -15,11 +15,14 @@ function Toolbar() {
   const [stateErase, setStateErase] = useState<boolean>()
   const [stateClearAll, setStateClearAll] = useState<boolean>()
   const [stateDownload, setStateDownload] = useState<boolean>()
+  const [isLineTypePopoverOpen, setIsLineTypePopoverOpen] = useState<boolean>(false)
+  const [isPenColorPopoverOpen, setIsPenColorPopoverOpen] = useState<boolean>(false)
+  const [isPenSizePopoverOpen, setIsPenSizePopoverOpen] = useState<boolean>(false)
+  const [isPaperTypePopoverOpen, setIsPaperTypePopoverOpen] = useState<boolean>(false)
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_PROJECT_URL as any
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PROJECT_ANON_KEY as any
   const supabase = createClient(supabaseUrl, supabaseAnonKey)
   const nanoId = nanoid()
-
   const handleErase = () => {
     dispatchTool({ type: "SET_IS_ERASE", payload: true })
     dispatchTool({ type: "SET_IS_PEN", payload: false })
@@ -43,26 +46,28 @@ function Toolbar() {
     setStatePen(false)
   }
 
-  const handleClearAllPressedChange = (i: any) => {
-  }
+  const handleClearAllPressedChange = (i: any) => {}
 
-  const handleDownloadPressedChange = (i: any) => {
-  }
+  const handleDownloadPressedChange = (i: any) => {}
 
   const handleColorsClick = (i: any) => {
     dispatchTool({ type: "SET_PEN_COLOR", payload: i?.color })
+    setIsPenColorPopoverOpen(false)
   }
 
   const handlePenSizeClick = (i: any) => {
     dispatchTool({ type: "SET_PEN_SIZE", payload: i?.thickness })
+    setIsPenSizePopoverOpen(false)
   }
 
   const handlePenStyleClick = (i: any) => {
     dispatchTool({ type: "SET_PEN_STYLE", payload: i?.styleType })
+    setIsLineTypePopoverOpen(false)
   }
 
   const handlePaperTypeClick = (i: any) => {
     dispatchTool({ type: "SET_PAPER_TYPE", payload: i?.paperType })
+    setIsPaperTypePopoverOpen(false)
   }
 
   const handleDownload = () => {
@@ -94,7 +99,6 @@ function Toolbar() {
       img.src = url
     }
   }
-
   return (
     <>
       <div
@@ -126,9 +130,13 @@ function Toolbar() {
           <Eraser className="h-4 w-4" />
         </Toggle>
         {/* // line type - dashed or solid or dotted*/}
-        <Popover>
+        <Popover open={isLineTypePopoverOpen} onOpenChange={(i) => setIsLineTypePopoverOpen(i)}>
           <PopoverTrigger>
-            <div className="flex justify-center items-center hover:bg-gray-100 w-[40px] h-[40px] rounded-md">
+            <div
+              className={`flex justify-center items-center hover:bg-gray-100 ${
+                isLineTypePopoverOpen ? `bg-gray-100` : null
+              } w-[40px] h-[40px] rounded-md`}
+            >
               <div
                 className=""
                 style={{
@@ -158,7 +166,7 @@ function Toolbar() {
                   <Fragment key={i.id}>
                     <div
                       onClick={() => handlePenStyleClick(i)}
-                      className="hover:bg-gray-100 w-[100%] flex items-center justify-center rounded-sm cursor-pointer"
+                      className="hover:bg-gray-100 w-[100%] flex items-center justify-center rounded-md cursor-pointer"
                     >
                       <div
                         style={{
@@ -179,15 +187,16 @@ function Toolbar() {
           </PopoverContent>
         </Popover>
         {/* // clear all */}
-        <Toggle
-          pressed={stateClearAll}
-          onPressedChange={(i: any) => handleClearAllPressedChange(i)}
+        <div
           onClick={handleClearAll}
+          className="flex cursor-pointer justify-center items-center hover:bg-gray-100 w-[40px] h-[40px] rounded-md"
         >
-          <X className="h-4 w-4" />
-        </Toggle>
+          <div className="rounded-full">
+            <X className="h-4 w-4" />
+          </div>
+        </div>
         {/* // pen color */}
-        <Popover>
+        <Popover open={isPenColorPopoverOpen} onOpenChange={(i) => setIsPenColorPopoverOpen(i)}>
           <PopoverTrigger>
             <div className="flex justify-center items-center hover:bg-gray-100 w-[40px] h-[40px] rounded-md">
               <div
@@ -208,19 +217,24 @@ function Toolbar() {
                 }}
               >
                 {colorPalette?.map((i, index) => (
-                  <div
-                    onClick={() => handleColorsClick(i)}
-                    style={{ backgroundColor: i.color, cursor: "pointer" }}
-                    className={`w-[20px] h-[20px] rounded-full`}
-                    key={index}
-                  ></div>
+                  <Fragment key={index}>
+                    <div
+                      onClick={() => handleColorsClick(i)}
+                      className="hover:bg-gray-200 p-1 cursor-pointer rounded-sm"
+                    >
+                      <div
+                        style={{ backgroundColor: i.color }}
+                        className={`w-[20px] h-[20px] rounded-full`}
+                      />
+                    </div>
+                  </Fragment>
                 ))}
               </div>
             </main>
           </PopoverContent>
         </Popover>
         {/* // pen size */}
-        <Popover>
+        <Popover open={isPenSizePopoverOpen} onOpenChange={(i) => setIsPenSizePopoverOpen(i)}>
           <PopoverTrigger>
             <div className="flex justify-center items-center hover:bg-gray-100 w-[40px] h-[40px] rounded-md">
               <div
@@ -255,7 +269,7 @@ function Toolbar() {
                         style={{
                           width: "20px",
                           height: `${i?.thickness}px`,
-                          backgroundColor: "#000000",
+                          backgroundColor: stateTool?.penColor,
                         }}
                       />
                     </div>
@@ -266,7 +280,7 @@ function Toolbar() {
           </PopoverContent>
         </Popover>
         {/* // paper type */}
-        <Popover>
+        <Popover open={isPaperTypePopoverOpen} onOpenChange={(i) => setIsPaperTypePopoverOpen(i)}>
           <PopoverTrigger>
             <div className="flex justify-center items-center hover:bg-gray-100 w-[40px] h-[40px] rounded-md">
               <Square className="h-4 w-4" />
